@@ -72,6 +72,20 @@ func parseReadback(lines []string, versions []string) []string {
 	return deleteVersions
 }
 
+func getEditor() string {
+	var e string
+
+	if e = os.Getenv("VISUAL"); e != "" {
+		return e
+	}
+
+	if e = os.Getenv("EDITOR"); e != "" {
+		return e
+	}
+
+	return "vim"
+}
+
 func promptEditor(versions []string) ([]string, error) {
 	tmpfile := createTempFile(versions)
 	defer os.Remove(tmpfile.Name())
@@ -81,7 +95,7 @@ func promptEditor(versions []string) ([]string, error) {
 		return nil, err
 	}
 
-	cmd := exec.Command("nvim", tmpfile.Name())
+	cmd := exec.Command(getEditor(), tmpfile.Name())
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
