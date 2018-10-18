@@ -35,6 +35,11 @@ func makePromptString(versions []string) string {
 		fmt.Fprintf(&b, "keep %s\n", v)
 	}
 
+	b.WriteString("\n")
+	b.WriteString("# Commands:\n")
+	b.WriteString("# k, keep <version> = keep this version\n")
+	b.WriteString("# d, drop <version> = delete all files associated with this version\n")
+
 	return b.String()
 }
 
@@ -51,6 +56,10 @@ func containsVersion(versions []string, version string) bool {
 func parseReadback(lines []string, versions []string) []string {
 	deleteVersions := make([]string, 0)
 	for _, line := range lines {
+		if strings.HasPrefix(line, "#") {
+			continue
+		}
+
 		if strings.HasPrefix(line, "drop ") || strings.HasPrefix(line, "d ") {
 			spaceIndex := strings.Index(line, " ")
 			version := strings.Trim(line[spaceIndex:], " ")
